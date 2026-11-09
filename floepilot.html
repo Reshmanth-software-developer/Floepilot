@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowPilot | Smart Traffic Optimizer</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#17243a;--line:#263750;--text:#edf4ff;--muted:#91a4bd;--cyan:#42d6cf;--green:#47d18c;--yellow:#f5c65e;--red:#ff6d78;--blue:#6ca8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,Segoe UI,sans-serif}
+header{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5%;background:#0d1728;position:sticky;top:0;z-index:5}
+.brand{display:flex;gap:12px;align-items:center;font-weight:800;font-size:21px;letter-spacing:.2px}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#36d4c8,#4e8cff);display:grid;place-items:center;color:#061321;font-size:21px}
+.brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1.5px}
+.live{color:var(--green);font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+main{max-width:1440px;margin:auto;padding:30px 5% 50px}.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(27px,4vw,39px);line-height:1.1;margin:8px 0}.sub{color:var(--muted);max-width:760px;margin:10px 0 24px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}.metric,.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px}.metric{padding:17px 18px}.metric label{display:block;color:var(--muted);font-size:12px}.metric strong{font-size:27px;display:block;margin:5px 0}.metric span{font-size:11px;color:var(--green)}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:16px}.panel{padding:20px;margin-bottom:16px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}.panel h2{font-size:16px;margin:0}.muted{color:var(--muted);font-size:12px}
+.map{height:355px;border-radius:12px;overflow:hidden;background:#172a3c;position:relative;border:1px solid #30445b}
+.map svg{width:100%;height:100%;display:block}.map-legend{display:flex;gap:15px;flex-wrap:wrap;margin-top:12px;color:var(--muted);font-size:11px}.key{display:flex;align-items:center;gap:6px}.swatch{width:9px;height:9px;border-radius:50%}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field input,.field select{width:100%;background:#0c1728;border:1px solid var(--line);border-radius:9px;color:var(--text);padding:11px;font:inherit;outline:none}.field input:focus,.field select:focus{border-color:var(--cyan)}
+.btn{border:0;border-radius:10px;padding:12px 16px;background:var(--cyan);color:#06202a;font-weight:800;cursor:pointer;font:inherit}.btn:hover{filter:brightness(1.08)}.btn.secondary{background:#243650;color:var(--text);border:1px solid var(--line)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+.result{background:#0d1d2d;border:1px solid #285064;border-radius:12px;padding:15px;margin-top:15px;display:none}.result h3{margin:0 0 7px;color:var(--cyan);font-size:14px}.result p{margin:6px 0;color:#c8d6e8;font-size:13px}
+.route-line{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}.route-line:last-child{border:0}.route-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#20334b;flex:none}.route-line b{font-size:13px}.route-line p{margin:2px 0;color:var(--muted);font-size:12px}
+.status{font-size:10px;border-radius:20px;padding:4px 8px;font-weight:800}.high{background:#49232e;color:#ff9ca4}.medium{background:#493c20;color:#ffdc83}.low{background:#173e35;color:#75e3ae}
+.table{width:100%;border-collapse:collapse;font-size:12px}.table th{text-align:left;color:var(--muted);font-weight:600;padding:10px 7px;border-bottom:1px solid var(--line)}.table td{padding:11px 7px;border-bottom:1px solid #223149}.table tr:last-child td{border:0}
+.bar{height:6px;background:#263750;border-radius:8px;overflow:hidden;min-width:60px}.bar i{display:block;height:100%;border-radius:8px;background:var(--yellow)}
+.notice{border-left:3px solid var(--yellow);padding:10px 12px;background:#25271f;color:#d8d4b7;border-radius:0 8px 8px 0;font-size:11px;margin-top:14px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:12px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:480px){header{padding:0 4%}.live{font-size:10px}main{padding:24px 4%}.controls{grid-template-columns:1fr}.map{height:290px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">↗</div><div>FlowPilot<small>URBAN MOBILITY INTELLIGENCE</small></div></div><div class="live"><i class="dot"></i> DEMO SYSTEM ACTIVE</div></header>
+<main>
+<div class="eyebrow">Smart city traffic management</div>
+<h1>Keep the city moving.</h1>
+<p class="sub">A real-time traffic and micro-transit optimization concept that detects localized congestion, recommends alternate routes, and proposes adaptive signal timings for smoother journeys.</p>
+<section class="metrics">
+<div class="metric"><label>Network congestion</label><strong id="congestion">62%</strong><span>↓ 8% after optimization</span></div>
+<div class="metric"><label>Estimated delay</label><strong id="delay">14 min</strong><span>Across monitored corridors</span></div>
+<div class="metric"><label>Vehicles monitored</label><strong>2,480</strong><span>Demo traffic sample</span></div>
+<div class="metric"><label>Potential time saved</label><strong id="saved">18%</strong><span>Modelled improvement</span></div>
+</section>
+<div class="layout">
+<div>
+<section class="panel">
+<div class="panel-head"><h2>City congestion overview</h2><span class="muted">Illustrative network · not live GPS</span></div>
+<div class="map">
+<svg viewBox="0 0 760 355" role="img" aria-label="Illustrative city road map with traffic congestion markers">
+<defs><pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" fill="none" stroke="#263c50" stroke-width="1"/></pattern></defs>
+<rect width="760" height="355" fill="#14283a"/><rect width="760" height="355" fill="url(#grid)"/>
+<g fill="#1b3447" stroke="#29475b" stroke-width="1"><rect x="28" y="24" width="125" height="70" rx="8"/><rect x="190" y="25" width="125" height="70" rx="8"/><rect x="360" y="24" width="130" height="70" rx="8"/><rect x="535" y="24" width="190" height="70" rx="8"/><rect x="25" y="245" width="130" height="80" rx="8"/><rect x="190" y="245" width="125" height="80" rx="8"/><rect x="360" y="245" width="130" height="80" rx="8"/><rect x="535" y="245" width="190" height="80" rx="8"/></g>
+<g stroke="#64788b" stroke-width="13" fill="none" opacity=".8"><path d="M0 174H760M340 0V355M520 0V355M0 115L760 285"/></g>
+<g stroke="#d4c98b" stroke-width="2" stroke-dasharray="12 10" fill="none"><path d="M0 174H760M340 0V355M520 0V355M0 115L760 285"/></g>
+<g font-family="Arial" font-size="11" fill="#b4c6d6"><text x="40" y="60">NORTH DISTRICT</text><text x="205" y="60">MARKET AREA</text><text x="382" y="60">CENTRAL</text><text x="570" y="60">EAST DISTRICT</text><text x="45" y="290">WEST HUB</text><text x="207" y="290">TRANSIT ZONE</text><text x="380" y="290">SOUTH LINK</text><text x="570" y="290">FREIGHT PARK</text></g>
+<g><circle cx="340" cy="174" r="16" fill="#ff6474" opacity=".22"/><circle cx="340" cy="174" r="7" fill="#ff6474"/><circle cx="520" cy="174" r="16" fill="#f3c45c" opacity=".22"/><circle cx="520" cy="174" r="7" fill="#f3c45c"/><circle cx="190" cy="145" r="16" fill="#ff6474" opacity=".22"/><circle cx="190" cy="145" r="7" fill="#ff6474"/><circle cx="340" cy="285" r="16" fill="#48d293" opacity=".2"/><circle cx="340" cy="285" r="7" fill="#48d293"/><circle cx="650" cy="174" r="16" fill="#48d293" opacity=".2"/><circle cx="650" cy="174" r="7" fill="#48d293"/></g>
+<g fill="#eaf3ff" font-size="10" font-family="Arial"><text x="355" y="162">Junction A</text><text x="535" y="160">Junction B</text><text x="205" y="132">Market Rd</text><text x="355" y="304">South Link</text><text x="665" y="160">Freight Gate</text></g>
+</svg>
+</div>
+<div class="map-legend"><span class="key"><i class="swatch" style="background:#ff6474"></i>Heavy congestion</span><span class="key"><i class="swatch" style="background:#f3c45c"></i>Moderate</span><span class="key"><i class="swatch" style="background:#48d293"></i>Free flow</span></div>
+</section>
+<section class="panel">
+<div class="panel-head"><h2>Optimize a journey</h2><span class="muted">Route recommendation demo</span></div>
+<div class="controls">
+<div class="field"><label for="origin">Starting point</label><input id="origin" value="Central Bus Station" /></div>
+<div class="field"><label for="destination">Destination</label><input id="destination" value="Technology Park" /></div>
+<div class="field"><label for="mode">Vehicle type</label><select id="mode"><option>Car</option><option>Freight truck</option><option>Two-wheeler</option><option>City bus</option></select></div>
+<div class="field"><label for="priority">Optimization priority</label><select id="priority"><option value="time">Fastest arrival</option><option value="balanced">Balanced route</option><option value="fuel">Fuel efficiency</option></select></div>
+</div>
+<div class="actions"><button class="btn" onclick="optimizeRoute()">Find best route ↗</button><button class="btn secondary" onclick="resetRoute()">Reset</button></div>
+<div class="result" id="routeResult" aria-live="polite"><h3>Recommended route</h3><p id="routeText"></p><p id="routeReason"></p></div>
+<div class="notice">Prototype note: this page uses illustrative sample traffic values. Connect a traffic provider/API and a verified routing service to enable live congestion, actual travel times, and production-grade rerouting.</div>
+</section>
+</div>
+<div>
+<section class="panel">
+<div class="panel-head"><h2>Congestion hotspots</h2><span class="muted">Sample feed</span></div>
+<div class="route-line"><div class="route-icon">🚦</div><div style="flex:1"><b>Market Road Junction</b><p>Queue building · 2.4 km slow traffic</p></div><span class="status high">HEAVY</span></div>
+<div class="route-line"><div class="route-icon">🚚</div><div style="flex:1"><b>Central Ring Road</b><p>Freight merge · 1.1 km slow traffic</p></div><span class="status high">HEAVY</span></div>
+<div class="route-line"><div class="route-icon">🚗</div><div style="flex:1"><b>East Avenue</b><p>Steady movement · 900 m queue</p></div><span class="status medium">MODERATE</span></div>
+<div class="route-line"><div class="route-icon">🚌</div><div style="flex:1"><b>South Transit Link</b><p>Public transport corridor clear</p></div><span class="status low">LOW</span></div>
+</section>
+<section class="panel">
+<div class="panel-head"><h2>Adaptive signal suggestions</h2><span class="muted">Proposed timings</span></div>
+<table class="table"><thead><tr><th>Intersection</th><th>Green time</th><th>Traffic</th></tr></thead><tbody>
+<tr><td>Market Rd</td><td><b>65 sec</b></td><td><span class="status high">HIGH</span></td></tr>
+<tr><td>Central Ring</td><td><b>55 sec</b></td><td><span class="status high">HIGH</span></td></tr>
+<tr><td>East Avenue</td><td><b>40 sec</b></td><td><span class="status medium">MED</span></td></tr>
+<tr><td>South Link</td><td><b>30 sec</b></td><td><span class="status low">LOW</span></td></tr>
+</tbody></table>
+<div class="notice">Signal timings are recommendations for simulation only. Real signal control requires traffic-engineer validation, pedestrian phases, emergency pre-emption, and authorized controller integration.</div>
+</section>
+<section class="panel">
+<div class="panel-head"><h2>How FlowPilot works</h2></div>
+<div class="route-line"><div class="route-icon">01</div><div><b>Read traffic feeds</b><p>Collect speed, vehicle count, incidents and road closures.</p></div></div>
+<div class="route-line"><div class="route-icon">02</div><div><b>Predict bottlenecks</b><p>Identify congestion patterns and estimate corridor delays.</p></div></div>
+<div class="route-line"><div class="route-icon">03</div><div><b>Optimize movement</b><p>Recommend alternate routes and adaptive signal splits.</p></div></div>
+<div class="route-line"><div class="route-icon">04</div><div><b>Measure impact</b><p>Track travel time, queue length, emissions and reliability.</p></div></div>
+</section>
+</div>
+</div>
+</main>
+<footer>FlowPilot · Smart Traffic & Micro-Transit Optimizer · Student project prototype</footer>
+<script>
+function optimizeRoute(){
+ const from=document.getElementById('origin').value.trim()||'Your location';
+ const to=document.getElementById('destination').value.trim()||'Your destination';
+ const mode=document.getElementById('mode').value;
+ const priority=document.getElementById('priority').value;
+ const choices={
+ time:{name:'South Link → East Avenue',time:'22 min',saving:'11 minutes',why:'Avoids the heavy queue at Market Road Junction.'},
+ balanced:{name:'South Link → Central Connector → East Avenue',time:'25 min',saving:'8 minutes',why:'Balances travel time with a shorter, steadier corridor.'},
+ fuel:{name:'Outer Ring Connector → East Avenue',time:'28 min',saving:'less stop-and-go driving',why:'Favors smoother traffic flow to reduce repeated braking and idling.'}
+ };
+ const c=choices[priority];
+ document.getElementById('routeText').textContent=from+' → '+to+' via '+c.name+'. Estimated demo travel time: '+c.time+'.';
+ document.getElementById('routeReason').textContent='Suggested for '+mode+'. '+c.why+' Potential benefit: '+c.saving+'.';
+ document.getElementById('routeResult').style.display='block';
+}
+function resetRoute(){document.getElementById('origin').value='Central Bus Station';document.getElementById('destination').value='Technology Park';document.getElementById('mode').value='Car';document.getElementById('priority').value='time';document.getElementById('routeResult').style.display='none'}
+</script>
+</body>
+</html>
